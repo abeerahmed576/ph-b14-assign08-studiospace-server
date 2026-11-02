@@ -22,9 +22,15 @@ app.use(express.json());
 
 const mongoClient = await connectToMongoDB();
 const db = mongoClient.db("studiospace");
+const studiosCollection = db.collection("studios");
 
 app.get("/", (req, res) => {
     res.send({ message: "Server is running fine!" });
+});
+
+app.get("/studios", async (req, res) => {
+    const result = await studiosCollection.find().toArray();
+    res.send(result);
 });
 
 app.listen(PORT, () => {
