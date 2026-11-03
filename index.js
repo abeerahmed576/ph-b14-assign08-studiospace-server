@@ -36,7 +36,7 @@ app.get("/studios", async (req, res) => {
   res.send(result);
 });
 
-app.post("/add-studio", async (req, res) => {
+app.post("/dashboard/add-studio", async (req, res) => {
   const data = req.body;
   const result = await studiosCollection.insertOne(data);
   res.send(result);
