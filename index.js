@@ -36,6 +36,32 @@ app.get("/studios", async (req, res) => {
   res.send(result);
 });
 
+app.get("/studios/:id", async (req, res) => {
+  const { id } = req.params;
+  const result = await studiosCollection.findOne({
+    _id: new ObjectId(id),
+  });
+  res.send(result);
+});
+
+app.patch("/studios/:id", async (req, res) => {
+  const { id } = req.params;
+  const data = req.body;
+  const result = await studiosCollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: data },
+  );
+  res.json(result);
+});
+
+app.delete("/studios/:id", async (req, res) => {
+  const { id } = req.params;
+  const result = await studiosCollection.deleteOne({
+    _id: new ObjectId(id),
+  });
+  res.json(result);
+});
+
 app.post("/dashboard/add-studio", async (req, res) => {
   const data = req.body;
   const result = await studiosCollection.insertOne(data);
