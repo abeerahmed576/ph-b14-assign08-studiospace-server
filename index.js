@@ -84,16 +84,29 @@ app.post("/bookings", async (req, res) => {
   const prevBookings = await bookingsCollection
     .find({ status: "Confirmed", "studio._id": data.studio._id })
     .toArray();
-  console.log(prevBookings);
   const conflict = prevBookings.some(
     (item) => item.bookingDate === data.bookingDate,
   );
-  console.log(conflict);
   if (conflict)
     return res.status(409).send({
       message: "The requested studio is already booked for the selected date",
     });
   const result = await bookingsCollection.insertOne(data);
+  res.send(result);
+});
+
+app.get("/bookings/:userId", async (req, res) => {
+  const { userId } = req.params;
+  const result = await bookingsCollection
+    .find({ "renter._id": userId })
+    .toArray();
+  res.send(result);
+});
+
+app.delete("/bookings/:id", async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+  const result = await bookingsCollection.deleteOne({ _id: new ObjectId(id) });
   res.send(result);
 });
 
