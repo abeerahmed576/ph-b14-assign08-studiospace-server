@@ -10,7 +10,7 @@ const client = new MongoClient(process.env.MONGODB_URI);
 export async function connectToMongoDB() {
   try {
     await client.connect();
-    console.log("You successfully connected to MongoDB!");
+    ("You successfully connected to MongoDB!");
     return client;
   } catch (err) {
     console.dir(err);
@@ -23,6 +23,7 @@ app.use(express.json());
 const mongoClient = await connectToMongoDB();
 const db = mongoClient.db("studiospace");
 const studiosCollection = db.collection("studios");
+const bookingsCollection = db.collection("bookings");
 
 app.get("/", (req, res) => {
   res.send({ message: "Server is running fine!" });
@@ -75,6 +76,24 @@ app.delete("/studios/:id", async (req, res) => {
 app.post("/dashboard/add-studio", async (req, res) => {
   const data = req.body;
   const result = await studiosCollection.insertOne(data);
+  res.send(result);
+});
+
+app.post("/bookings", async (req, res) => {
+  const data = req.body;
+  const prevBookings = await bookingsCollection
+    .find({ status: "Confirmed", "studio._id": data.studio._id })
+    .toArray();
+  console.log(prevBookings);
+  const conflict = prevBookings.some(
+    (item) => item.bookingDate === data.bookingDate,
+  );
+  console.log(conflict);
+  if (conflict)
+    return res.status(409).send({
+      message: "The requested studio is already booked for the selected date",
+    });
+  const result = await bookingsCollection.insertOne(data);
   res.send(result);
 });
 
