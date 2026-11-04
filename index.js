@@ -44,6 +44,16 @@ app.get("/studios/:id", async (req, res) => {
   res.send(result);
 });
 
+app.get("/studios/user/:email", async (req, res) => {
+  const { email } = req.params;
+  const result = await studiosCollection
+    .find({
+      "host.email": email,
+    })
+    .toArray();
+  res.send(result);
+});
+
 app.patch("/studios/:id", async (req, res) => {
   const { id } = req.params;
   const data = req.body;
