@@ -66,6 +66,15 @@ app.get("/studios-carousel", async (req, res) => {
   res.send(result);
 });
 
+app.get("/top-rated-studios", async (req, res) => {
+  const result = await studiosCollection
+    .find({})
+    .sort({ rating: -1 })
+    .limit(6)
+    .toArray();
+  res.send(result);
+});
+
 app.get("/studios", async (req, res) => {
   const category = req.query.category || "all";
   let result = [];
