@@ -29,6 +29,20 @@ app.get("/", (req, res) => {
   res.send({ message: "Server is running fine!" });
 });
 
+app.get("/studios-carousel", async (req, res) => {
+  const images = await studiosCollection
+    .aggregate([
+      {
+        $project: {
+          image: { $arrayElemAt: ["$images", 1] },
+        },
+      },
+    ])
+    .toArray();
+  const result = images.map(({ image }) => image).filter((image) => image);
+  res.send(result);
+});
+
 app.get("/studios", async (req, res) => {
   const category = req.query.category || "all";
   let result = [];
